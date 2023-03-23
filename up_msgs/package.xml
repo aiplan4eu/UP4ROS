@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>up_msgs</name>
+  <version>0.0.1</version>
+  <description>Messages to interact with the AIPlan4EU Unified Planning library</description>
+  <maintainer email="gemignani@magazino.eu">gemignani</maintainer>
+  <author email="gemignani@magazino.eu">gemignani</author>
+  <license>proprietary</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>rospy</exec_depend>
+  <export />
+</package>

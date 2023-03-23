@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>UP4ROS</name>
+  <version>0.0.1</version>
+  <description>ROS wrapper for the unified planning library</description>
+  <maintainer email="gemignani@magazino.eu">gemignani</maintainer>
+  <author email="gemignani@magazino.eu">gemignani</author>
+  <license>proprietary</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <export>
+    <metapackage/>
+  </export>
+</package>
