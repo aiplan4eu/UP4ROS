@@ -1,0 +1,5 @@
+<launch>
+
+  <node name="up4ros" pkg="up4ros" type="start_up4ros.py" cwd="node" output="screen" clear_params="true" respawn="true"/>
+
+</launch>

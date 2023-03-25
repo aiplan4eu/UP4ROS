@@ -12,9 +12,9 @@ This repository contains a ROS wrapper for the AIPlan4EU Unified Planning librar
     * `/up4ros/set_initial_value` `[up_msgs/srv/SetInitialValue]` 
     * `/up4ros/set_problem` `[up_msgs/srv/SetProblem]`
   * Actions:
-    * `/up4ros/planOneShotPDDL` `[up_msgs/action/PDDLPlanOneShot]` 
-    * `/up4ros/planOneShot` `[up_msgs/action/PlanOneShot]` 
-    * `/up4ros/planOneShotRemote` `[up_msgs/action/PlanOneShotRemote]` 
+    * `/up4ros/planOneShotPDDL` `[up_msgs/action/PDDLPlanOneShotAction]`
+    * `/up4ros/planOneShot` `[up_msgs/action/PlanOneShotAction]`
+    * `/up4ros/planOneShotRemote` `[up_msgs/action/PlanOneShotRemoteAction]`
 
 ## Acknowledgments
 
