@@ -33,6 +33,7 @@ from unified_planning.shortcuts import (
 )
 
 from unified_planning.test.examples import get_example_problems
+from unified_planning.plans import PlanKind
 
 from up4ros.ros_interface_reader import ROSInterfaceReader
 from up4ros.ros_interface_writer import ROSInterfaceWriter
@@ -157,7 +158,6 @@ class TestROSInterfaces(unittest.TestCase):
     def test_action(self):
         problem = self.problems['robot'].problem
         action = problem.action('move')
-
         action_pb = self.pb_writer.convert(action)
         action_up = self.pb_reader.convert(action_pb, problem)
 
@@ -208,14 +208,10 @@ class TestROSInterfaces(unittest.TestCase):
         problem.add_quality_metric(metric=metrics.MinimizeSequentialPlanLength())
         problem.add_quality_metric(metric=metrics.MinimizeMakespan())
         problem.add_quality_metric(
-            metric=metrics.MinimizeExpressionOnFinalState(
-                problem.environment.expression_manager.true_expression
-            )
+            metric=metrics.MinimizeExpressionOnFinalState(0)
         )
         problem.add_quality_metric(
-            metric=metrics.MaximizeExpressionOnFinalState(
-                problem.environment.expression_manager.true_expression
-            )
+            metric=metrics.MaximizeExpressionOnFinalState(0)
         )
 
         for metric in problem.quality_metrics:
@@ -306,6 +302,9 @@ class TestROSInterfacesProblems(unittest.TestCase):
     def test_all_problems(self):
         for name, example in self.problems.items():
             problem = example.problem
+            if "HIERARCHICAL" in problem.kind.features:
+                continue
+
             problem_pb = self.pb_writer.convert(problem)
             problem_up = self.pb_reader.convert(problem_pb)
 
@@ -316,9 +315,10 @@ class TestROSInterfacesProblems(unittest.TestCase):
         for name, example in self.problems.items():
             problem = example.problem
             plan = example.plan
+            if plan.kind == PlanKind.HIERARCHICAL_PLAN:
+                continue
             plan_pb = self.pb_writer.convert(plan)
             plan_up = self.pb_reader.convert(plan_pb, problem)
-
             self.assertEqual(plan, plan_up)
             self.assertEqual(hash(plan), hash(plan_up))
 

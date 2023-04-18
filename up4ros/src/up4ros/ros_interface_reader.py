@@ -165,7 +165,6 @@ class ROSInterfaceReader(Converter):
         self, msg: msgs.Expression, problem: Problem
     ) -> model.Expression:
         root_expr = msg.expressions[0]
-
         if root_expr.kind == msgs.ExpressionItem.CONSTANT:
             assert len(root_expr.atom) > 0
             return self.convert(root_expr.atom[0], problem)
@@ -199,7 +198,6 @@ class ROSInterfaceReader(Converter):
             rest_msg = msgs.Expression()
             rest_msg.expressions = msg.expressions[2:]
             rest_msg.level = msg.level[2:]
-
             clusters = self.cluster_args(rest_msg)
 
             args.extend([self.convert(m, problem) for m in clusters])
@@ -446,7 +444,7 @@ class ROSInterfaceReader(Converter):
         if msg.kind == msgs.Metric.MINIMIZE_ACTION_COSTS:
             costs = {}
             for i in range(len(msg.action_cost_names)):
-                costs[list(msg.action_cost_names)[i]] = self.convert(
+                costs[problem.action(list(msg.action_cost_names)[i])] = self.convert(
                     msg.action_cost_expr[i], problem
                 )
 

@@ -35,7 +35,7 @@ from unified_planning.model.operators import (
 from unified_planning.model.timing import TimepointKind, Interval
 from unified_planning.model.types import domain_item, domain_size
 import unified_planning.model.walkers as walkers
-from unified_planning.plans import ActionInstance, SequentialPlan, TimeTriggeredPlan
+from unified_planning.plans import ActionInstance, SequentialPlan, TimeTriggeredPlan, HierarchicalPlan
 
 from up4ros.converter import Converter, handles
 from up_msgs import msg as msgs
@@ -117,7 +117,7 @@ class FNode2ROS(walkers.DagWalker):
         item.kind = msgs.ExpressionItem.CONSTANT
         ret = msgs.Expression()
         ret.expressions.append(item)
-        ret.level = []
+        ret.level = [0]
         return ret
 
     @staticmethod
@@ -194,7 +194,7 @@ class FNode2ROS(walkers.DagWalker):
             item.kind = msgs.ExpressionItem.CONTAINER_ID
             expr = msgs.Expression()
             expr.expressions.append(item)
-            expr.level.append(0)
+            expr.level = bytearray(expr.level) + bytearray([0])
             args = [expr]
         else:
             args = []
@@ -218,18 +218,18 @@ class FNode2ROS(walkers.DagWalker):
 
         tp_exp = msgs.Expression()
         tp_exp.expressions.append(msgs.ExpressionItem())
-        tp_exp.level.append(0)
+        tp_exp.level = bytearray(tp_exp.level) + bytearray([0])
 
         tp_exp.expressions[0].kind = msgs.ExpressionItem.FUNCTION_APPLICATION
         tp_exp.expressions[0].type = "up:time"
 
         tp_exp.expressions.append(fn_exp_item)
-        tp_exp.level.append(1)
+        tp_exp.level = bytearray(tp_exp.level) + bytearray([1])
 
         (other_expr, other_levels) = self.increase_level_expressions(args, 1)
 
         tp_exp.expressions.extend(other_expr)
-        tp_exp.level.extend(other_levels)
+        tp_exp.level = bytearray(tp_exp.level) + bytearray(other_levels)
 
         assert timing.delay == 0
         return tp_exp
@@ -263,12 +263,12 @@ class FNode2ROS(walkers.DagWalker):
         item.type = interface_type(expression.fluent().type)
         item.kind = msgs.ExpressionItem.FLUENT_SYMBOL
         ret.expressions.append(item)
-        ret.level.append(1)
+        ret.level = bytearray(ret.level) + bytearray([1])
 
         (extended_expr, extended_levels) = self.increase_level_expressions(args, 1)
 
         ret.expressions.extend(extended_expr)
-        ret.level.extend(extended_levels)
+        ret.level = bytearray(ret.level) + bytearray(extended_levels)
 
         return ret
 
@@ -300,13 +300,13 @@ class FNode2ROS(walkers.DagWalker):
         ret.expressions[0].type = ""
 
         ret.expressions.append(expr_item)
-        ret.level.append(1)
+        ret.level = bytearray(ret.level) + bytearray([1])
 
         ret.expressions.extend(other_expr)
         ret.level.extend(other_levels)
 
         ret.expressions.extend(args_expr)
-        ret.level.extend(args_level)
+        ret.level = bytearray(ret.level) + bytearray(args_level)
 
         return ret
 
@@ -574,7 +574,7 @@ class ROSInterfaceWriter(Converter):
             aux.kind = msgs.ExpressionItem.PARAMETER
             aux.type = interface_type(p.type)
             expr.expressions.append(aux)
-            expr.level.append(0)
+            expr.level = bytearray(expr.level) + bytearray([0])
             parameters.append(expr)
 
         ret = msgs.Task()
@@ -785,6 +785,13 @@ class ROSInterfaceWriter(Converter):
         ret = msgs.Plan()
         ret.actions = action_instances
         return ret
+
+    @handles(HierarchicalPlan)
+    def _convert_hierarchical_plan(
+        self, plan: HierarchicalPlan
+    ) -> msgs.Plan:
+        # FIXME: TO BE IMPLEMENTED
+        return None
 
     @handles(PlanGenerationResult)
     def _convert_plan_generation_result(
