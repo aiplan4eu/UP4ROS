@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 import unittest
+from os.path import exists
 
 import pytest
 import rospkg
@@ -46,6 +47,15 @@ from up_msgs.srv import (
 from up_msgs.srv import PDDLPlanOneShot as PDDLPlanOneShotSrv
 
 from up4ros.up4ros_node import UP4ROSNode
+import os
+
+
+def print_tree(rootDir):
+    for lists in os.listdir(rootDir):
+        path = os.path.join(rootDir, lists)
+        print(path)
+        if os.path.isdir(path):
+            print_tree(path)
 
 
 class Testup4ros(unittest.TestCase):
@@ -63,12 +73,24 @@ class Testup4ros(unittest.TestCase):
         goal_msg = PDDLPlanOneShotActionGoal()
         goal_msg.goal.plan_request.mode = msgs.PDDLPlanRequest.FILE
 
+        print("\n\n\n\nHERE:")
+        print(self.rospack.get_ros_paths())
+        (print_tree(self.rospack.get_path('up4ros')))
+        print("\n\n\n\n")
+
         goal_msg.goal.plan_request.domain = (self.rospack.get_path('up4ros')
-                                             + '/pddl/gripper_domain.pddl')
+                                             + '/tests/pddl/gripper_domain.pddl')
         goal_msg.goal.plan_request.problem = (self.rospack.get_path('up4ros')
-                                              + '/pddl/gripper_problem_0.pddl')
+                                              + '/tests/pddl/gripper_problem_0.pddl')
+
+        if not exists(goal_msg.goal.plan_request.problem):
+            goal_msg.goal.plan_request.domain = (self.rospack.get_path('up4ros')
+                                                 + '/pddl/gripper_domain.pddl')
+            goal_msg.goal.plan_request.problem = (self.rospack.get_path('up4ros')
+                                                  + '/pddl/gripper_problem_0.pddl')
 
         reader = PDDLReader()
+
         upf_problem = reader.parse_problem(
             goal_msg.goal.plan_request.domain,
             goal_msg.goal.plan_request.problem)

@@ -65,7 +65,7 @@ jobs:
           python3 setup.py install
           python3 scripts/test_imports.py
       - name: build and test ROS 1
-        uses: ros-tooling/action-ros-ci@v0.2
+        uses: ros-tooling/action-ros-ci@v0.3
         with:
           package-name: up4ros up_msgs
           target-ros1-distro: ${{ matrix.ros_distribution }}

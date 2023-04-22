@@ -9,6 +9,7 @@ on:
       - master
 
 env:
+  up_commit: "master"
   up_tamer_commit: "master"
   up_pyperplan_commit: "master"
   up_fast_downward_commit: "master"
@@ -38,16 +39,17 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y wget python3-vcstool python3-pytest libfl-dev pip
       - name: Install unified planning from sources
         run: |
+          mkdir src
+          cd src
           git clone https://github.com/aiplan4eu/unified-planning.git
           cd unified-planning
+          git checkout ${{env.up_commit}}
           python3 -m pip install -r requirements.txt
           python3 -m pip install -r dev-requirements.txt
           python3 -m pip install tarski[arithmetic]
-          sudo apt install -y gringo
-          python3 -m pip install black==22.6.0
+          # sudo apt install -y gringo
           python3 -m black --check --exclude=unified_planning/grpc/generated/ .
           python3 -m mypy unified_planning
-          python3 scripts/test_imports.py
           cd ..
           git clone https://github.com/aiplan4eu/up-tamer
           cd up-tamer
@@ -59,9 +61,11 @@ jobs:
           git checkout ${{env.up_pyperplan_commit}}
           cd ..
           python3 -m pip install up-pyperplan/
-          pip install unified_planning[tamer]
+          cd unified-planning
+          python3 setup.py install
+          python3 scripts/test_imports.py
       - name: build and test ROS 1
-        uses: ros-tooling/action-ros-ci@v0.2
+        uses: ros-tooling/action-ros-ci@v0.3
         with:
           package-name: up4ros up_msgs
           target-ros1-distro: ${{ matrix.ros_distribution }}
