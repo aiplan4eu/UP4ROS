@@ -14,10 +14,6 @@
 # limitations under the License.
 #
 
-# This module started from the test_protobuf_io.py module from the
-# AIPlan4EU project, with the same license
-
-
 import unittest
 
 from unified_planning import engines, environment, model, shortcuts
