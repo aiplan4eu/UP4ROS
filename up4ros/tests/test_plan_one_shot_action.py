@@ -28,7 +28,7 @@ def test_plan_robot():
     # prepare the magic mock
     action_server_mock = MagicMock()
     problems = get_example_problems()
-    problem = problems['robot'].problem
+    problem = problems["robot"].problem
 
     pb_writter = ROSInterfaceWriter()
     goal_msg = msgs.PlanOneShotGoal()
@@ -38,8 +38,8 @@ def test_plan_robot():
         feedback = feedback_msg.feedback
         pb_reader = ROSInterfaceReader()
         upf_plan = pb_reader.convert(feedback.plan_result.plan, problem)
-        good_plan = '[move(l1, l2)]'
-        assert(upf_plan.__repr__() == good_plan)
+        good_plan = "[move(l1, l2)]"
+        assert upf_plan.__repr__() == good_plan
 
     action_server_mock.publish_feedback = feedback_mock
 

@@ -22,8 +22,15 @@ from itertools import product
 from typing import Dict, List
 
 from unified_planning import model
-from unified_planning.engines import PlanGenerationResult, PlanGenerationResultStatus, LogMessage, LogLevel, \
-    CompilerResult, ValidationResult, ValidationResultStatus
+from unified_planning.engines import (
+    PlanGenerationResult,
+    PlanGenerationResultStatus,
+    LogMessage,
+    LogLevel,
+    CompilerResult,
+    ValidationResult,
+    ValidationResultStatus,
+)
 from unified_planning.exceptions import UPException
 import unified_planning.model.htn
 from unified_planning.model.operators import (
@@ -35,7 +42,12 @@ from unified_planning.model.operators import (
 from unified_planning.model.timing import TimepointKind, Interval
 from unified_planning.model.types import domain_item, domain_size
 import unified_planning.model.walkers as walkers
-from unified_planning.plans import ActionInstance, SequentialPlan, TimeTriggeredPlan, HierarchicalPlan
+from unified_planning.plans import (
+    ActionInstance,
+    SequentialPlan,
+    TimeTriggeredPlan,
+    HierarchicalPlan,
+)
 
 from up4ros.converter import Converter, handles
 from up_msgs import msg as msgs
@@ -768,17 +780,13 @@ class ROSInterfaceWriter(Converter):
         return ret
 
     @handles(SequentialPlan)
-    def _convert_sequential_plan(
-        self, plan: SequentialPlan
-    ) -> msgs.Plan:
+    def _convert_sequential_plan(self, plan: SequentialPlan) -> msgs.Plan:
         ret = msgs.Plan()
         ret.actions = [self.convert(a) for a in plan.actions]
         return ret
 
     @handles(TimeTriggeredPlan)
-    def _convert_time_triggered_plan(
-        self, plan: TimeTriggeredPlan
-    ) -> msgs.Plan:
+    def _convert_time_triggered_plan(self, plan: TimeTriggeredPlan) -> msgs.Plan:
         action_instances = []
 
         for a in plan.timed_actions:
@@ -793,9 +801,7 @@ class ROSInterfaceWriter(Converter):
         return ret
 
     @handles(HierarchicalPlan)
-    def _convert_hierarchical_plan(
-        self, plan: HierarchicalPlan
-    ) -> msgs.Plan:
+    def _convert_hierarchical_plan(self, plan: HierarchicalPlan) -> msgs.Plan:
         # FIXME: TO BE IMPLEMENTED
         return None
 
@@ -822,39 +828,22 @@ class ROSInterfaceWriter(Converter):
     def _convert_plan_generation_status(
         self, status: PlanGenerationResultStatus
     ) -> int:
-        if (
-            status
-            == PlanGenerationResultStatus.SOLVED_SATISFICING
-        ):
+        if status == PlanGenerationResultStatus.SOLVED_SATISFICING:
             return msgs.PlanGenerationResult.SOLVED_SATISFICING
 
-        elif (
-            status
-            == PlanGenerationResultStatus.SOLVED_OPTIMALLY
-        ):
+        elif status == PlanGenerationResultStatus.SOLVED_OPTIMALLY:
             return msgs.PlanGenerationResult.SOLVED_OPTIMALLY
-        elif (
-            status
-            == PlanGenerationResultStatus.UNSOLVABLE_PROVEN
-        ):
+        elif status == PlanGenerationResultStatus.UNSOLVABLE_PROVEN:
             return msgs.PlanGenerationResult.UNSOLVABLE_PROVEN
-        elif (
-            status
-            == PlanGenerationResultStatus.UNSOLVABLE_INCOMPLETELY
-        ):
+        elif status == PlanGenerationResultStatus.UNSOLVABLE_INCOMPLETELY:
             return msgs.PlanGenerationResult.UNSOLVABLE_INCOMPLETELY
         elif status == PlanGenerationResultStatus.TIMEOUT:
             return msgs.PlanGenerationResult.TIMEOUT
         elif status == PlanGenerationResultStatus.MEMOUT:
             return msgs.PlanGenerationResult.MEMOUT
-        elif (
-            status == PlanGenerationResultStatus.INTERNAL_ERROR
-        ):
+        elif status == PlanGenerationResultStatus.INTERNAL_ERROR:
             return msgs.PlanGenerationResult.INTERNAL_ERROR
-        elif (
-            status
-            == PlanGenerationResultStatus.UNSUPPORTED_PROBLEM
-        ):
+        elif status == PlanGenerationResultStatus.UNSUPPORTED_PROBLEM:
 
             return msgs.PlanGenerationResult.UNSUPPORTED_PROBLEM
         elif status == PlanGenerationResultStatus.INTERMEDIATE:
@@ -863,9 +852,7 @@ class ROSInterfaceWriter(Converter):
             raise ValueError("Unknown status: {}".format(status))
 
     @handles(LogMessage)
-    def _convert_log_messages(
-        self, log: LogMessage
-    ) -> msgs.LogMessage:
+    def _convert_log_messages(self, log: LogMessage) -> msgs.LogMessage:
         if log.level == LogLevel.INFO:
             level = msgs.LogMessage.INFO
         elif log.level == LogLevel.WARNING:
@@ -883,9 +870,7 @@ class ROSInterfaceWriter(Converter):
         return ret
 
     @handles(CompilerResult)
-    def _convert_compiler_result(
-        self, result: CompilerResult
-    ) -> msgs.CompilerResult:
+    def _convert_compiler_result(self, result: CompilerResult) -> msgs.CompilerResult:
         mymap: Dict[str, msgs.ActionInstance] = {}
         log_messages = result.log_messages
         if log_messages is None:
@@ -933,9 +918,7 @@ class ROSInterfaceWriter(Converter):
         return ret
 
     @handles(ValidationResultStatus)
-    def _convert_validation_result_status(
-        self, status: ValidationResultStatus
-    ) -> int:
+    def _convert_validation_result_status(self, status: ValidationResultStatus) -> int:
         if status == ValidationResultStatus.VALID:
             return msgs.ValidationResult.VALID
         elif status == ValidationResultStatus.INVALID:

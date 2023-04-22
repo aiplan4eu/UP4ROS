@@ -26,14 +26,14 @@ def test_new_problem():
     node_test._new_problem = service_mock
 
     req = srvs.NewProblemRequest()
-    req.problem_name = 'problem_test_1'
+    req.problem_name = "problem_test_1"
     response = node_test.new_problem(req)
 
     assert response.success
-    assert response.message == ''
+    assert response.message == ""
 
     srv = srvs.NewProblemRequest()
-    srv.problem_name = 'problem_test_1'
+    srv.problem_name = "problem_test_1"
     response = node_test.new_problem(req)
     assert not response.success
-    assert(response.message == 'Problem problem_test_1 already exists')
+    assert response.message == "Problem problem_test_1 already exists"

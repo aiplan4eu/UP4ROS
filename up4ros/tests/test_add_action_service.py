@@ -30,39 +30,39 @@ def test_add_action():
     pb_writer = ROSInterfaceWriter()
 
     problems = get_example_problems()
-    problem = problems['robot'].problem
+    problem = problems["robot"].problem
     req = srvs.SetProblemRequest()
-    req.problem_name = 'problem_test_robot'
+    req.problem_name = "problem_test_robot"
     req.problem = pb_writer.convert(problem)
 
     response = node_test.set_problem(req)
     assert response.success
-    assert(response.message == '')
+    assert response.message == ""
 
-    Location = shortcuts.UserType('Location')
-    robot_at = model.Fluent('robot_at', shortcuts.BoolType(), l=Location)
+    Location = shortcuts.UserType("Location")
+    robot_at = model.Fluent("robot_at", shortcuts.BoolType(), l=Location)
 
-    move = model.InstantaneousAction('move2', l_from=Location, l_to=Location)
-    l_from = move.parameter('l_from')
-    l_to = move.parameter('l_to')
+    move = model.InstantaneousAction("move2", l_from=Location, l_to=Location)
+    l_from = move.parameter("l_from")
+    l_to = move.parameter("l_to")
     move.add_precondition(robot_at(l_from))
     move.add_effect(robot_at(l_from), False)
     move.add_effect(robot_at(l_to), True)
 
     add_action_srv = srvs.AddActionRequest()
-    add_action_srv.problem_name = 'problem_test_robot'
+    add_action_srv.problem_name = "problem_test_robot"
     add_action_srv.action = pb_writer.convert(move)
 
     add_action_response = node_test.add_action(add_action_srv)
     assert add_action_response.success
-    assert (add_action_response.message == '')
+    assert add_action_response.message == ""
 
     problem.add_action(move)
 
     pb_reader = ROSInterfaceReader()
 
     req2 = srvs.GetProblemRequest()
-    req2.problem_name = 'problem_test_robot'
+    req2.problem_name = "problem_test_robot"
 
     response2 = node_test.get_problem(req2)
     assert response2.success

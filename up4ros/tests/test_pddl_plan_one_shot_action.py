@@ -30,23 +30,26 @@ def test_plan_from_file_pddl_no_tt():
     goal_msg = msgs.PDDLPlanOneShotActionGoal()
     goal_msg.goal.plan_request.mode = msgs.PDDLPlanRequest.FILE
 
-    domain, problem = get_domain_and_problem('pddl/gripper_domain.pddl',
-                                             'pddl/gripper_problem_0.pddl')
+    domain, problem = get_domain_and_problem(
+        "pddl/gripper_domain.pddl", "pddl/gripper_problem_0.pddl"
+    )
     goal_msg.goal.plan_request.domain = domain
     goal_msg.goal.plan_request.problem = problem
 
     # let's mock the publish_feedback method
     reader = PDDLReader()
     upf_problem = reader.parse_problem(
-        goal_msg.goal.plan_request.domain,
-        goal_msg.goal.plan_request.problem)
+        goal_msg.goal.plan_request.domain, goal_msg.goal.plan_request.problem
+    )
 
     def feedback_mock(msg):
         pb_reader = ROSInterfaceReader()
         upf_plan = pb_reader.convert(msg.feedback.plan_result.plan, upf_problem)
-        good_plans = ['[pick(ball1, rooma, right), move(rooma, roomb), drop(ball1, roomb, right)]',
-                      '[pick(ball1, rooma, left), move(rooma, roomb), drop(ball1, roomb, left)]']
-        assert(upf_plan.__repr__() in good_plans)
+        good_plans = [
+            "[pick(ball1, rooma, right), move(rooma, roomb), drop(ball1, roomb, right)]",
+            "[pick(ball1, rooma, left), move(rooma, roomb), drop(ball1, roomb, left)]",
+        ]
+        assert upf_plan.__repr__() in good_plans
 
     action_server_mock.publish_feedback = feedback_mock
 
@@ -69,22 +72,23 @@ def test_plan_from_file_pddl_tt():
     goal_msg = msgs.PDDLPlanOneShotActionGoal()
     goal_msg.goal.plan_request.mode = msgs.PDDLPlanRequest.FILE
 
-    domain, problem = get_domain_and_problem('/pddl/domain_tt.pddl',
-                                             '/pddl/problem_tt_1.pddl')
+    domain, problem = get_domain_and_problem(
+        "/pddl/domain_tt.pddl", "/pddl/problem_tt_1.pddl"
+    )
     goal_msg.goal.plan_request.domain = domain
     goal_msg.goal.plan_request.problem = problem
 
     # let's mock the publish_feedback method
     reader = PDDLReader()
     upf_problem = reader.parse_problem(
-        goal_msg.goal.plan_request.domain,
-        goal_msg.goal.plan_request.problem)
+        goal_msg.goal.plan_request.domain, goal_msg.goal.plan_request.problem
+    )
 
     def feedback_mock(msg):
         pb_reader = ROSInterfaceReader()
         upf_plan = pb_reader.convert(msg.feedback.plan_result.plan, upf_problem)
-        good_plan = '[(Fraction(0, 1), move(leia, kitchen, bedroom), Fraction(5, 1))]'
-        assert (upf_plan.__repr__() == good_plan)
+        good_plan = "[(Fraction(0, 1), move(leia, kitchen, bedroom), Fraction(5, 1))]"
+        assert upf_plan.__repr__() == good_plan
 
     action_server_mock.publish_feedback = feedback_mock
 

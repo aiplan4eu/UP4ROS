@@ -87,9 +87,7 @@ class UP4ROSNode:
         )
 
         self._plan_one_shot_server = actionlib.SimpleActionServer(
-            "up4ros/action/planOneShot",
-            PlanOneShotAction,
-            self.plan_one_shot_callback,
+            "up4ros/action/planOneShot", PlanOneShotAction, self.plan_one_shot_callback
         )
 
         self._add_action = rospy.Service(
@@ -297,7 +295,9 @@ class UP4ROSNode:
             print("%s returned: %s" % (planner.name, result.plan))
 
             feedback_msg = PDDLPlanOneShotActionFeedback()
-            feedback_msg.feedback.plan_result = self._ros_interface_writer.convert(result)
+            feedback_msg.feedback.plan_result = self._ros_interface_writer.convert(
+                result
+            )
 
             self._pddl_plan_one_shot_server.publish_feedback(feedback_msg)
             result = PDDLPlanOneShotActionResult()
@@ -306,16 +306,16 @@ class UP4ROSNode:
             self._pddl_plan_one_shot_server.set_succeeded(result)
 
     def plan_one_shot_callback(self, goal):
-        upf_problem = self._ros_interface_reader.convert(
-            goal.plan_request.problem
-        )
+        upf_problem = self._ros_interface_reader.convert(goal.plan_request.problem)
 
         with OneshotPlanner(problem_kind=upf_problem.kind) as planner:
             result = planner.solve(upf_problem)
             print("%s returned: %s" % (planner.name, result.plan))
 
             feedback_msg = PlanOneShotActionFeedback()
-            feedback_msg.feedback.plan_result = self._ros_interface_writer.convert(result)
+            feedback_msg.feedback.plan_result = self._ros_interface_writer.convert(
+                result
+            )
 
             self._plan_one_shot_server.publish_feedback(feedback_msg)
             result = PlanOneShotActionResult()

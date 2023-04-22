@@ -30,25 +30,25 @@ def test_add_object():
     pb_writer = ROSInterfaceWriter()
 
     problems = get_example_problems()
-    problem = problems['robot'].problem
+    problem = problems["robot"].problem
     req = srvs.SetProblemRequest()
-    req.problem_name = 'problem_test_robot'
+    req.problem_name = "problem_test_robot"
     req.problem = pb_writer.convert(problem)
 
     response = node_test.set_problem(req)
     assert response.success
-    assert(response.message == '')
+    assert response.message == ""
 
-    Location = shortcuts.UserType('Location')
-    upf_object = model.Object('l3', Location)
+    Location = shortcuts.UserType("Location")
+    upf_object = model.Object("l3", Location)
 
     add_object_req = srvs.AddObjectRequest()
-    add_object_req.problem_name = 'problem_test_robot'
+    add_object_req.problem_name = "problem_test_robot"
     add_object_req.object = pb_writer.convert(upf_object)
 
     add_object_response = node_test.add_object(add_object_req)
     assert add_object_response.success
-    assert (add_object_response.message == '')
+    assert add_object_response.message == ""
 
     # TODO: understand why this was commented out
     #
@@ -65,5 +65,3 @@ def test_add_object():
     # problem_ret = pb_reader.convert(response2.problem)
     #
     # assert(problem == problem_ret)
-
-

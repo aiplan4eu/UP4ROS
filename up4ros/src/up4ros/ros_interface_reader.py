@@ -24,8 +24,15 @@ from typing import Dict, List, Optional, OrderedDict, Tuple, Union
 
 from unified_planning import Environment
 from unified_planning import model
-from unified_planning.engines import PlanGenerationResult, PlanGenerationResultStatus, LogMessage, CompilerResult, \
-    ValidationResult, ValidationResultStatus, LogLevel
+from unified_planning.engines import (
+    PlanGenerationResult,
+    PlanGenerationResultStatus,
+    LogMessage,
+    CompilerResult,
+    ValidationResult,
+    ValidationResultStatus,
+    LogLevel,
+)
 from unified_planning.engines.compilers.utils import lift_action_instance
 from unified_planning.exceptions import UPException
 from unified_planning.model import (
@@ -42,7 +49,12 @@ from unified_planning.model.effect import EffectKind
 from unified_planning.model.htn import Task
 from unified_planning.model.operators import OperatorKind
 import unified_planning.plans
-from unified_planning.plans import Plan, TimeTriggeredPlan, SequentialPlan, ActionInstance
+from unified_planning.plans import (
+    Plan,
+    TimeTriggeredPlan,
+    SequentialPlan,
+    ActionInstance,
+)
 
 from up4ros.converter import Converter, handles
 from up_msgs import msg as msgs
@@ -202,7 +214,9 @@ class ROSInterfaceReader(Converter):
 
             args.extend([self.convert(m, problem) for m in clusters])
             if payload is not None:
-                return problem.environment.expression_manager.FluentExp(payload, tuple(args))
+                return problem.environment.expression_manager.FluentExp(
+                    payload, tuple(args)
+                )
             else:
                 raise UPException(f"Unable to form fluent expression {msg}")
 
@@ -308,7 +322,9 @@ class ROSInterfaceReader(Converter):
             father = (
                 problem.user_type(msg.parent_type) if msg.parent_type != "" else None
             )
-            return problem.environment.type_manager.UserType(name=msg.type_name, father=father)
+            return problem.environment.type_manager.UserType(
+                name=msg.type_name, father=father
+            )
 
     @handles(msgs.Problem)
     def _convert_problem(
@@ -376,7 +392,9 @@ class ROSInterfaceReader(Converter):
         self, msg: msgs.AbstractTaskDeclaration, problem: Problem
     ):
         return model.htn.Task(
-            msg.name, [self.convert(p, problem) for p in msg.parameters], problem.environment
+            msg.name,
+            [self.convert(p, problem) for p in msg.parameters],
+            problem.environment,
         )
 
     @handles(msgs.Task)
@@ -390,14 +408,18 @@ class ROSInterfaceReader(Converter):
         else:
             raise ValueError(f"Unknown task name: {msg.task_name}")
         parameters = [self.convert(p, problem) for p in msg.parameters]
-        return model.htn.Subtask(task, *parameters, ident=msg.id, _env=problem.environment)
+        return model.htn.Subtask(
+            task, *parameters, ident=msg.id, _env=problem.environment
+        )
 
     @handles(msgs.Method)
     def _convert_method(
         self, msg: msgs.Method, problem: model.htn.HierarchicalProblem
     ) -> model.htn.Method:
         method = model.htn.Method(
-            msg.name, [self.convert(p, problem) for p in msg.parameters], problem.environment
+            msg.name,
+            [self.convert(p, problem) for p in msg.parameters],
+            problem.environment,
         )
         achieved_task_params = []
         for p in msg.achieved_task.parameters:
@@ -598,9 +620,7 @@ class ROSInterfaceReader(Converter):
         return model.timing.Timepoint(kind, container)
 
     @handles(msgs.Plan)
-    def _convert_plan(
-        self, msg: msgs.Plan, problem: Problem
-    ) -> Plan:
+    def _convert_plan(self, msg: msgs.Plan, problem: Problem) -> Plan:
         actions = [self.convert(a, problem) for a in msg.actions]
         if all(isinstance(a, tuple) for a in actions):
             return TimeTriggeredPlan(actions)
@@ -611,20 +631,14 @@ class ROSInterfaceReader(Converter):
     def _convert_action_instance(
         self, msg: msgs.ActionInstance, problem: Problem
     ) -> Union[
-        Tuple[
-            model.timing.Timing,
-            ActionInstance,
-            model.timing.Duration,
-        ],
+        Tuple[model.timing.Timing, ActionInstance, model.timing.Duration],
         ActionInstance,
     ]:
         # action instance parameters are atoms but in UP they are FNodes
         # converting to up.model.FNode
         parameters = tuple([self.convert(param, problem) for param in msg.parameters])
 
-        action_instance = ActionInstance(
-            problem.action(msg.action_name), parameters
-        )
+        action_instance = ActionInstance(problem.action(msg.action_name), parameters)
 
         start_time = self.convert(msg.start_time) if msg.time_triggered else None
         end_time = self.convert(msg.end_time) if msg.time_triggered else None
@@ -642,33 +656,21 @@ class ROSInterfaceReader(Converter):
         self, result: msgs.PlanGenerationResult, problem: Problem
     ) -> PlanGenerationResult:
         if result.status == msgs.PlanGenerationResult.SOLVED_SATISFICING:
-            status = (
-                PlanGenerationResultStatus.SOLVED_SATISFICING
-            )
+            status = PlanGenerationResultStatus.SOLVED_SATISFICING
         elif result.status == msgs.PlanGenerationResult.SOLVED_OPTIMALLY:
-            status = (
-                PlanGenerationResultStatus.SOLVED_OPTIMALLY
-            )
+            status = PlanGenerationResultStatus.SOLVED_OPTIMALLY
         elif result.status == msgs.PlanGenerationResult.UNSOLVABLE_PROVEN:
-            status = (
-                PlanGenerationResultStatus.UNSOLVABLE_PROVEN
-            )
+            status = PlanGenerationResultStatus.UNSOLVABLE_PROVEN
         elif result.status == msgs.PlanGenerationResult.UNSOLVABLE_INCOMPLETELY:
-            status = (
-                PlanGenerationResultStatus.UNSOLVABLE_INCOMPLETELY
-            )
+            status = PlanGenerationResultStatus.UNSOLVABLE_INCOMPLETELY
         elif result.status == msgs.PlanGenerationResult.TIMEOUT:
             status = PlanGenerationResultStatus.TIMEOUT
         elif result.status == msgs.PlanGenerationResult.MEMOUT:
             status = PlanGenerationResultStatus.MEMOUT
         elif result.status == msgs.PlanGenerationResult.INTERNAL_ERROR:
-            status = (
-                PlanGenerationResultStatus.INTERNAL_ERROR
-            )
+            status = PlanGenerationResultStatus.INTERNAL_ERROR
         elif result.status == msgs.PlanGenerationResult.UNSUPPORTED_PROBLEM:
-            status = (
-                PlanGenerationResultStatus.UNSUPPORTED_PROBLEM
-            )
+            status = PlanGenerationResultStatus.UNSUPPORTED_PROBLEM
         else:
             raise UPException(f"Unknown Planner Status: {result.status}")
 
@@ -690,25 +692,15 @@ class ROSInterfaceReader(Converter):
         )
 
     @handles(msgs.LogMessage)
-    def _convert_log_message(
-        self, log: msgs.LogMessage
-    ) -> LogMessage:
+    def _convert_log_message(self, log: msgs.LogMessage) -> LogMessage:
         if log.level == msgs.LogMessage.INFO:
-            return LogMessage(
-                level=LogLevel.INFO, message=log.message
-            )
+            return LogMessage(level=LogLevel.INFO, message=log.message)
         elif log.level == msgs.LogMessage.WARNING:
-            return LogMessage(
-                level=LogLevel.WARNING, message=log.message
-            )
+            return LogMessage(level=LogLevel.WARNING, message=log.message)
         elif log.level == msgs.LogMessage.ERROR:
-            return LogMessage(
-                level=LogLevel.ERROR, message=log.message
-            )
+            return LogMessage(level=LogLevel.ERROR, message=log.message)
         elif log.level == msgs.LogMessage.DEBUG:
-            return LogMessage(
-                level=LogLevel.DEBUG, message=log.message
-            )
+            return LogMessage(level=LogLevel.DEBUG, message=log.message)
         else:
             raise UPException(f"Unexpected Log Level: {log.level}")
 
@@ -736,9 +728,7 @@ class ROSInterfaceReader(Converter):
             )
         return CompilerResult(
             problem=problem,
-            map_back_action_instance=partial(
-                lift_action_instance, map=mymap
-            ),
+            map_back_action_instance=partial(lift_action_instance, map=mymap),
             engine_name=result.engine,
             log_messages=[self.convert(log) for log in result.log_messages],
         )

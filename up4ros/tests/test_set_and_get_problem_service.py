@@ -27,32 +27,32 @@ def test_set_get_problem():
     pb_writer = ROSInterfaceWriter()
 
     problems = get_example_problems()
-    problem = problems['robot'].problem
+    problem = problems["robot"].problem
 
     req = srvs.SetProblemRequest()
-    req.problem_name = 'problem_test_robot'
+    req.problem_name = "problem_test_robot"
     req.problem = pb_writer.convert(problem)
 
     response = node_test.set_problem(req)
     assert response.success
-    assert(response.message == '')
+    assert response.message == ""
 
     req = srvs.SetProblemRequest()
-    req.problem_name = 'problem_test_robot'
+    req.problem_name = "problem_test_robot"
     req.problem = pb_writer.convert(problem)
 
     response = node_test.set_problem(req)
     assert not response.success
-    assert(response.message == 'Problem problem_test_robot already exists')
+    assert response.message == "Problem problem_test_robot already exists"
 
     pb_reader = ROSInterfaceReader()
 
     req2 = srvs.GetProblemRequest()
-    req2.problem_name = 'problem_test_robot'
+    req2.problem_name = "problem_test_robot"
 
     response2 = node_test.get_problem(req2)
     assert response2.success
 
     problem_ret = pb_reader.convert(response2.problem)
 
-    assert(problem == problem_ret)
+    assert problem == problem_ret

@@ -31,28 +31,26 @@ def test_add_set_fluent():
     pb_writer = ROSInterfaceWriter()
 
     problems = get_example_problems()
-    problem = problems['robot'].problem
+    problem = problems["robot"].problem
     srv = srvs.SetProblemRequest()
-    srv.problem_name = 'problem_test_robot'
+    srv.problem_name = "problem_test_robot"
     srv.problem = pb_writer.convert(problem)
 
     response = node_test.set_problem(srv)
     assert response.success
-    assert(response.message == '')
+    assert response.message == ""
 
-    Location = shortcuts.UserType('Location')
-    robot_at = model.Fluent(
-        'robot_at_bis', shortcuts.BoolType(),
-        l=Location)
+    Location = shortcuts.UserType("Location")
+    robot_at = model.Fluent("robot_at_bis", shortcuts.BoolType(), l=Location)
 
     add_fluent_req = srvs.AddFluentRequest()
-    add_fluent_req.problem_name = 'problem_test_robot'
+    add_fluent_req.problem_name = "problem_test_robot"
     add_fluent_req.fluent = pb_writer.convert(robot_at, problem)
 
     item = msgs.ExpressionItem()
     item.atom.append(msgs.Atom())
     item.atom[0].boolean_atom.append(False)
-    item.type = 'up:bool'
+    item.type = "up:bool"
     item.kind = msgs.ExpressionItem.CONSTANT
     value = msgs.Expression()
     value.expressions.append(item)
@@ -62,42 +60,42 @@ def test_add_set_fluent():
 
     add_fluent_response = node_test.add_fluent(add_fluent_req)
     assert add_fluent_response.success
-    assert(add_fluent_response.message == '')
+    assert add_fluent_response.message == ""
 
     problem.add_fluent(robot_at, default_initial_value=False)
 
     set_initial_value_req = srvs.SetInitialValueRequest()
-    set_initial_value_req.problem_name = 'problem_test_robot'
-    l2 = model.Object('l2', Location)
+    set_initial_value_req.problem_name = "problem_test_robot"
+    l2 = model.Object("l2", Location)
     set_initial_value_req.expression = pb_writer.convert(robot_at(l2))
     set_initial_value_req.value = value
 
     set_initial_value_response = node_test.set_initial_value(set_initial_value_req)
     assert set_initial_value_response.success
-    assert(set_initial_value_response.message == '')
+    assert set_initial_value_response.message == ""
 
     problem.set_initial_value(robot_at(l2), False)
 
     add_goal_srv = srvs.AddGoalRequest()
-    add_goal_srv.problem_name = 'problem_test_robot'
-    l1 = model.Object('l1', Location)
+    add_goal_srv.problem_name = "problem_test_robot"
+    l1 = model.Object("l1", Location)
     add_goal_srv.goal.append(msgs.Goal())
     add_goal_srv.goal[0].goal = pb_writer.convert(robot_at(l1))
 
     add_goal_response = node_test.add_goal(add_goal_srv)
     assert add_goal_response.success
-    assert(add_goal_response.message == '')
+    assert add_goal_response.message == ""
 
     problem.add_goal(robot_at(l1))
 
     pb_reader = ROSInterfaceReader()
 
     srv2 = srvs.GetProblemRequest()
-    srv2.problem_name = 'problem_test_robot'
+    srv2.problem_name = "problem_test_robot"
 
     response2 = node_test.get_problem(srv2)
     assert response2.success
 
     problem_ret = pb_reader.convert(response2.problem)
 
-    assert(problem == problem_ret)
+    assert problem == problem_ret
