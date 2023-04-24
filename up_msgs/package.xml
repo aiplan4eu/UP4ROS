@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>up_msgs</name>
+  <version>0.0.1</version>
+  <description>Messages to interact with the AIPlan4EU Unified Planning library</description>
+  <maintainer email="gemignani@magazino.eu">gemignani</maintainer>
+  <author email="gemignani@magazino.eu">gemignani</author>
+  <license>Apache License, Version 2.0</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>genmsg</build_depend>
+  <build_depend>actionlib</build_depend>
+  <build_depend>actionlib_msgs</build_depend>
+  <build_depend>message_generation</build_depend>
+  <build_depend>std_msgs</build_depend>
+
+  <exec_depend>actionlib</exec_depend>
+  <exec_depend>actionlib_msgs</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <export />
+</package>
