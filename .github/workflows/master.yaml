@@ -64,8 +64,20 @@ jobs:
           cd unified-planning
           python3 setup.py install
           python3 scripts/test_imports.py
-      - name: build and test ROS 1
+      - name: Build and test ROS 1
+        id: build-and-test-ros-1
         uses: ros-tooling/action-ros-ci@v0.3
         with:
           package-name: up4ros up_msgs
           target-ros1-distro: ${{ matrix.ros_distribution }}
+      - name: Generate coverage
+        run: |
+          echo "Generating code coverage for up4ros"
+          bash -c "source "$(find . -path "*install*" -type f -name "setup.bash" -print -quit)""
+          cd $(find . -path "*src*" -type d -name "UP4ROS" -print -quit)
+          python3 -m pytest up4ros --cov=up4ros --cov-report=xml
+      - uses: codecov/codecov-action@v3.1.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: unittests
+          fail_ci_if_error: false
