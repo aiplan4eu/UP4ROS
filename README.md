@@ -1,3 +1,6 @@
+![master](https://github.com/aiplan4eu/UP4ROS/actions/workflows/master.yaml/badge.svg)
+![devel](https://github.com/aiplan4eu/UP4ROS/actions/workflows/devel.yaml/badge.svg)
+
 This repository contains a ROS wrapper for the AIPlan4EU Unified Planning library available at https://github.com/aiplan4eu/unified-planning.
 
 ## Nodes
