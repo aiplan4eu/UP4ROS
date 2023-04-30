@@ -17,6 +17,7 @@ install(DIRECTORY launch/
 install(DIRECTORY tests/pddl/
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/pddl)
 
+
 if (CATKIN_ENABLE_TESTING)
     find_package(ros_pytest REQUIRED)
     add_pytests(tests)

@@ -23,7 +23,6 @@ jobs:
           - noetic
 
         include:
-          # Noetic Ninjemys (May 2020 - May 2025)
           - docker_image: ubuntu:focal
             ros_distribution: noetic
             ros_version: 1
@@ -31,12 +30,17 @@ jobs:
     container:
       image: ${{ matrix.docker_image }}
     steps:
+
       - name: setup ROS environment
         uses: ros-tooling/setup-ros@v0.6
         with:
           required-ros-distributions: ${{ matrix.ros_distribution }}
-      - name: Install deps
-        run: sudo apt-get update && sudo apt-get install -y wget python3-vcstool python3-pytest libfl-dev pip
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget python3-vcstool python3-pytest libfl-dev pip python3-rosdep python3-catkin-tools build-essential
+
       - name: Install unified planning from sources
         run: |
           mkdir src
@@ -64,8 +68,37 @@ jobs:
           cd unified-planning
           python3 setup.py install
           python3 scripts/test_imports.py
-      - name: build and test ROS 1
-        uses: ros-tooling/action-ros-ci@v0.3
+          cd ..
+
+      - name: Prepare the catkin ws
+        id: prepare-catkin-ws
+        run: |
+          mkdir -p catkin_ws/src
+          cd catkin_ws
+          catkin_ws=$(pwd)
+          bash -c "source /opt/ros/noetic/setup.bash && catkin config --install --cmake-args -DCMAKE_BUILD_TYPE=Debug"
+          echo "catkin_ws=$catkin_ws" >> $GITHUB_OUTPUT
+
+      - name: Checkout code
+        uses: actions/checkout@v2
         with:
-          package-name: up4ros up_msgs
-          target-ros1-distro: ${{ matrix.ros_distribution }}
+          path: ${{steps.prepare-catkin-ws.outputs.catkin_ws}}/src
+
+      - name: Running tests and generating the code coverage report
+        id: test-and-coverage
+        run: |
+          rosdep update
+          rosdep install --from-paths ${{steps.prepare-catkin-ws.outputs.catkin_ws}}/src/ --ignore-src --rosdistro=${{ matrix.ros_distribution }} -y
+          cd ${{steps.prepare-catkin-ws.outputs.catkin_ws}}
+          bash -c "source /opt/ros/noetic/setup.bash && catkin build up_msgs up4ros --no-status --no-notify"
+          cd ${{steps.prepare-catkin-ws.outputs.catkin_ws}}/src
+          bash -c "source ${{steps.prepare-catkin-ws.outputs.catkin_ws}}/install/setup.bash && python3 -m pytest --cov=up4ros --cov-report=xml"
+          coverage_file=$(pwd)/coverage.xml
+          echo "coverage_file=$coverage_file" >> $GITHUB_OUTPUT
+
+      - uses: codecov/codecov-action@v3.1.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: unittests
+          files: ${{steps.test-and-coverage.outputs.coverage_file}}
+          fail_ci_if_error: false

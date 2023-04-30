@@ -17,6 +17,7 @@
   <exec_depend>rosservice</exec_depend>
   <exec_depend>up_msgs</exec_depend>
 
+  <test_depend>code_coverage</test_depend>
   <test_depend>python-pytest</test_depend>
   <test_depend>ros_pytest</test_depend>
 
