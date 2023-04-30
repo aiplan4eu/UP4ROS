@@ -1,5 +1,6 @@
 ![master](https://github.com/aiplan4eu/UP4ROS/actions/workflows/master.yaml/badge.svg)
 ![devel](https://github.com/aiplan4eu/UP4ROS/actions/workflows/devel.yaml/badge.svg)
+[![codecov](https://codecov.io/github/aiplan4eu/UP4ROS/branch/master/graph/badge.svg?token=W9RX14LTPS)](https://codecov.io/github/aiplan4eu/UP4ROS)
 
 This repository contains a ROS wrapper for the AIPlan4EU Unified Planning library available at https://github.com/aiplan4eu/unified-planning.
 
