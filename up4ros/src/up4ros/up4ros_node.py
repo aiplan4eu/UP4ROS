@@ -29,11 +29,11 @@ from up4ros.ros_interface_writer import ROSInterfaceWriter
 from up_msgs.msg import (
     PDDLPlanRequest,
     PDDLPlanOneShotAction,
-    PDDLPlanOneShotActionFeedback,
-    PDDLPlanOneShotActionResult,
+    PDDLPlanOneShotFeedback,
+    PDDLPlanOneShotResult,
     PlanOneShotAction,
-    PlanOneShotActionFeedback,
-    PlanOneShotActionResult,
+    PlanOneShotFeedback,
+    PlanOneShotResult,
 )
 
 from up_msgs.srv import (
@@ -237,7 +237,6 @@ class UP4ROSNode:
         return response
 
     def pddl_plan_one_shot(self, request):
-
         if request.plan_request.mode == PDDLPlanRequest.RAW:
             domain_file = tempfile.NamedTemporaryFile()
             problem_file = tempfile.NamedTemporaryFile()
@@ -274,18 +273,17 @@ class UP4ROSNode:
             return response
 
     def pddl_plan_one_shot_callback(self, goal):
-
-        if goal.goal.plan_request.mode == PDDLPlanRequest.RAW:
+        if goal.plan_request.mode == PDDLPlanRequest.RAW:
             domain_file = tempfile.NamedTemporaryFile()
             problem_file = tempfile.NamedTemporaryFile()
 
             with open(domain_file, "w") as pddl_writer:
-                pddl_writer.write(goal.goal.plan_request.domain)
+                pddl_writer.write(goal.plan_request.domain)
             with open(problem_file, "w") as pddl_writer:
-                pddl_writer.write(goal.goal.plan_request.problem)
+                pddl_writer.write(goal.plan_request.problem)
         else:
-            domain_file = goal.goal.plan_request.domain
-            problem_file = goal.goal.plan_request.problem
+            domain_file = goal.plan_request.domain
+            problem_file = goal.plan_request.problem
 
         reader = PDDLReader()
         upf_problem = reader.parse_problem(domain_file, problem_file)
@@ -294,15 +292,16 @@ class UP4ROSNode:
             result = planner.solve(upf_problem)
             print("%s returned: %s" % (planner.name, result.plan))
 
-            feedback_msg = PDDLPlanOneShotActionFeedback()
-            feedback_msg.feedback.plan_result = self._ros_interface_writer.convert(
-                result
-            )
+            feedback_msg = PDDLPlanOneShotFeedback()
+            feedback_msg.plan_result = self._ros_interface_writer.convert(result)
 
             self._pddl_plan_one_shot_server.publish_feedback(feedback_msg)
-            result = PDDLPlanOneShotActionResult()
-            result.result.success = True
-            result.result.message = ""
+
+            rospy.sleep(0.1)  # sleep to allow the feedback to be sent
+
+            result = PDDLPlanOneShotResult()
+            result.success = True
+            result.message = ""
             self._pddl_plan_one_shot_server.set_succeeded(result)
 
     def plan_one_shot_callback(self, goal):
@@ -312,13 +311,14 @@ class UP4ROSNode:
             result = planner.solve(upf_problem)
             print("%s returned: %s" % (planner.name, result.plan))
 
-            feedback_msg = PlanOneShotActionFeedback()
-            feedback_msg.feedback.plan_result = self._ros_interface_writer.convert(
-                result
-            )
+            feedback_msg = PlanOneShotFeedback()
+            feedback_msg.plan_result = self._ros_interface_writer.convert(result)
 
             self._plan_one_shot_server.publish_feedback(feedback_msg)
-            result = PlanOneShotActionResult()
-            result.result.success = True
-            result.result.message = ""
+
+            rospy.sleep(0.1)  # sleep to allow the feedback to be sent
+
+            result = PlanOneShotResult()
+            result.success = True
+            result.message = ""
             self._plan_one_shot_server.set_succeeded(result)

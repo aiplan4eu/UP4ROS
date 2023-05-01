@@ -35,9 +35,8 @@ def test_plan_robot():
     goal_msg.plan_request.problem = pb_writter.convert(problem)
 
     def feedback_mock(feedback_msg):
-        feedback = feedback_msg.feedback
         pb_reader = ROSInterfaceReader()
-        upf_plan = pb_reader.convert(feedback.plan_result.plan, problem)
+        upf_plan = pb_reader.convert(feedback_msg.plan_result.plan, problem)
         good_plan = "[move(l1, l2)]"
         assert upf_plan.__repr__() == good_plan
 
@@ -47,8 +46,8 @@ def test_plan_robot():
     node_test._plan_one_shot_server = action_server_mock
     node_test.plan_one_shot_callback(goal_msg)
 
-    expected_result = msgs.PlanOneShotActionResult()
-    expected_result.result.success = True
-    expected_result.result.message = ""
+    expected_result = msgs.PlanOneShotResult()
+    expected_result.success = True
+    expected_result.message = ""
 
     action_server_mock.set_succeeded.assert_called_with(expected_result)

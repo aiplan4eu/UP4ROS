@@ -8,6 +8,8 @@ catkin_package()
 catkin_install_python(
     PROGRAMS
     scripts/start_up4ros.py
+    scripts/example_client.py
+    scripts/example_pddl_client.py
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
