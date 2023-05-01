@@ -18,7 +18,7 @@ def run_plan_one_shot(action_name="/up4ros/action/planOneShot"):
     )
 
     rospy.loginfo(
-        "Sending to '%s' the following goal messge:\n%s\n", action_name, goal_msg
+        "Sending to '%s' the following goal message:\n%s\n", action_name, goal_msg
     )
 
     def print_feedback(msg):
