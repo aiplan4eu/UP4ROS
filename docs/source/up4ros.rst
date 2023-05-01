@@ -124,7 +124,7 @@ where a problem is defined as:
     uint8 SIMULATED_EFFECTS=25
 
 
-**feedback type:** up_msgs.msg.PlanFeedback
+**feedback type:** up_msgs.msg.PlanGenerationResult
 
 .. code-block:: console
 
@@ -181,7 +181,7 @@ where a problem is defined as:
     # Synthetic description of the engine that generated this message.
     string engine_name
 
-**result type:** up_msgs.msg.PlanResult
+**result type:** up_msgs.msg.PDDLPlanOneShotResult
 
 .. code-block:: console
 
@@ -194,7 +194,7 @@ PlanOneShotAction
 This action takes in input a problem and domain formulated as ROS messages and tries to use one of the registered planners to produce a solution in the feedback. 
 The result will tell us if the planner managed or not to find a solution.
 
-**Goal type:** up_msgs.msg.PDDLPlanRequest
+**Goal type:** up_msgs.msg.PlanRequest
 
 .. code-block:: console
 
@@ -219,7 +219,7 @@ The result will tell us if the planner managed or not to find a solution.
     string engine_option_names
     string engine_option_values
 
-**feedback type:** up_msgs.msg.PDDLPlanFeedback
+**feedback type:** up_msgs.msg.PlanGenerationResult
 
 .. code-block:: console
 
@@ -276,7 +276,7 @@ The result will tell us if the planner managed or not to find a solution.
     # Synthetic description of the engine that generated this message.
     string engine_name
 
-**result type:** up_msgs.msg.PDDLPlanResult
+**result type:** up_msgs.msg.PlanOneShotResult
 
 .. code-block:: console
 
@@ -286,7 +286,93 @@ The result will tell us if the planner managed or not to find a solution.
 PlanOneShotRemoteAction
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-To be implemented.
+This action takes in input a problem name which should be known by the running up4ros node and tries to use one of the registered planners to produce a solution in the feedback.
+The result will tell us if the planner managed or not to find a solution.
+The action assumes that the user has used the services described below to set up at run time a problem to be solved by the planners.
+
+**Goal type:** up_msgs.msg.PlanRequestRemote
+
+.. code-block:: console
+
+    string problem
+
+    uint8 SATISFIABLE=0
+    uint8 SOLVED_OPTIMALLY=1
+    uint8 resolution_mode
+
+    # Max allowed runtime time in seconds.
+    float64 timeout
+
+    # Engine specific options to be passed to the engine
+    string engine_option_names
+    string engine_option_values
+
+
+**feedback type:** up_msgs.msg.PlanGenerationResult
+
+.. code-block:: console
+
+    ## Message sent by engine.
+    ## Contains the engine exit status as well as the best plan found if any.
+
+
+    # ==== Engine stopped normally ======
+
+    # Valid plan found
+    # The `plan` field must be set.
+    uint8 SOLVED_SATISFICING=0
+    # Plan found with optimality guarantee
+    # The `plan` field must be set and contains an optimal solution.
+    uint8 SOLVED_OPTIMALLY=1
+    # No plan exists
+    uint8 UNSOLVABLE_PROVEN=2
+    # The engine was not able to find a solution but does not give any guarantee that none exist
+    # (i.e. the engine might not be complete)
+    uint8 UNSOLVABLE_INCOMPLETELY=3
+
+    # ====== Engine exited before making any conclusion ====
+    # Search stopped before concluding SOLVED_OPTIMALLY or UNSOLVABLE_PROVEN
+    # If a plan was found, it might be reported in the `plan` field
+
+    # The engine ran out of time
+    uint8 TIMEOUT=13
+    # The engine ran out of memory
+    uint8 MEMOUT=14
+    # The engine faced an internal error.
+    uint8 INTERNAL_ERROR=15
+    # The problem submitted is not supported by the engine.
+    uint8 UNSUPPORTED_PROBLEM=16
+
+    # ====== Intermediate answer ======
+    # This Answer is an Intermediate Answer and not a Final one
+    uint8 INTERMEDIATE=17
+
+    uint8 status
+
+    # Optional. Best plan found if any.
+    up_msgs/Plan plan
+
+    # A set of engine specific values that can be reported, for instance
+    # - "grounding-time": "10ms"
+    # - "expanded-states": "1290"
+    string[] metric_names
+    string[] metric_values
+
+    # Optional log messages about the engine's activity.
+    # Note that it should not be expected that logging messages are visible to the end user.
+    # If used in conjunction with INTERNAL_ERROR or UNSUPPORTED_PROBLEM, it would be expected to have at least one log message at the ERROR level.
+    up_msgs/LogMessage[] log_messages
+
+    # Synthetic description of the engine that generated this message.
+    string engine_name
+
+
+**result type:** up_msgs.msg.PlanOneShotRemoteResult
+
+.. code-block:: console
+
+    bool success
+    string message
 
 Services
 --------

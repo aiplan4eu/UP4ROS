@@ -38,7 +38,6 @@ def test_one_shot_remote_success():
     assert response.message == ""
 
     problem = node_test.problems["problem_test_robot"]
-    print(type(problem))
 
     goal_msg = msgs.PlanOneShotRemoteGoal()
     goal_msg.plan_request.problem = "problem_test_robot"
