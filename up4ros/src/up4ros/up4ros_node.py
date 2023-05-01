@@ -34,6 +34,9 @@ from up_msgs.msg import (
     PlanOneShotAction,
     PlanOneShotFeedback,
     PlanOneShotResult,
+    PlanOneShotRemoteAction,
+    PlanOneShotRemoteFeedback,
+    PlanOneShotRemoteResult,
 )
 
 from up_msgs.srv import (
@@ -88,6 +91,12 @@ class UP4ROSNode:
 
         self._plan_one_shot_server = actionlib.SimpleActionServer(
             "up4ros/action/planOneShot", PlanOneShotAction, self.plan_one_shot_callback
+        )
+
+        self._plan_one_shot_remote_server = actionlib.SimpleActionServer(
+            "up4ros/action/planOneShotRemote",
+            PlanOneShotRemoteAction,
+            self.plan_one_shot_remote_callback,
         )
 
         self._add_action = rospy.Service(
@@ -252,14 +261,14 @@ class UP4ROSNode:
         reader = PDDLReader()
         response = PDDLPlanOneShotResponse()
         try:
-            upf_problem = reader.parse_problem(domain_file, problem_file)
+            up_problem = reader.parse_problem(domain_file, problem_file)
         except Exception:
             response.success = False
             response.message = "Error parsing problem"
             return response
 
-        with OneshotPlanner(problem_kind=upf_problem.kind) as planner:
-            result = planner.solve(upf_problem)
+        with OneshotPlanner(problem_kind=up_problem.kind) as planner:
+            result = planner.solve(up_problem)
             print("%s returned: %s" % (planner.name, result.plan))
 
             if result.plan is not None:
@@ -286,10 +295,10 @@ class UP4ROSNode:
             problem_file = goal.plan_request.problem
 
         reader = PDDLReader()
-        upf_problem = reader.parse_problem(domain_file, problem_file)
+        up_problem = reader.parse_problem(domain_file, problem_file)
 
-        with OneshotPlanner(problem_kind=upf_problem.kind) as planner:
-            result = planner.solve(upf_problem)
+        with OneshotPlanner(problem_kind=up_problem.kind) as planner:
+            result = planner.solve(up_problem)
             print("%s returned: %s" % (planner.name, result.plan))
 
             feedback_msg = PDDLPlanOneShotFeedback()
@@ -305,10 +314,10 @@ class UP4ROSNode:
             self._pddl_plan_one_shot_server.set_succeeded(result)
 
     def plan_one_shot_callback(self, goal):
-        upf_problem = self._ros_interface_reader.convert(goal.plan_request.problem)
+        up_problem = self._ros_interface_reader.convert(goal.plan_request.problem)
 
-        with OneshotPlanner(problem_kind=upf_problem.kind) as planner:
-            result = planner.solve(upf_problem)
+        with OneshotPlanner(problem_kind=up_problem.kind) as planner:
+            result = planner.solve(up_problem)
             print("%s returned: %s" % (planner.name, result.plan))
 
             feedback_msg = PlanOneShotFeedback()
@@ -322,3 +331,30 @@ class UP4ROSNode:
             result.success = True
             result.message = ""
             self._plan_one_shot_server.set_succeeded(result)
+
+    def plan_one_shot_remote_callback(self, goal):
+        up_problem = self.problems.get(goal.plan_request.problem)
+
+        if up_problem is None:
+            result = PlanOneShotRemoteResult()
+
+            result.success = False
+            result.message = f"Problem {goal.plan_request.problem} does not exist"
+            self._plan_one_shot_remote_server.set_succeeded(result)
+            return
+
+        with OneshotPlanner(problem_kind=up_problem.kind) as planner:
+            result = planner.solve(up_problem)
+            print("%s returned: %s" % (planner.name, result.plan))
+
+            feedback_msg = PlanOneShotRemoteFeedback()
+            feedback_msg.plan_result = self._ros_interface_writer.convert(result)
+
+            self._plan_one_shot_remote_server.publish_feedback(feedback_msg)
+
+            rospy.sleep(0.1)  # sleep to allow the feedback to be sent
+
+            result = PlanOneShotRemoteResult()
+            result.success = True
+            result.message = ""
+            self._plan_one_shot_remote_server.set_succeeded(result)
