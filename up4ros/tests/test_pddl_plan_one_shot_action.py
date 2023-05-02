@@ -27,24 +27,24 @@ def test_plan_from_file_pddl_no_tt():
 
     # prepare the magic mock
     action_server_mock = MagicMock()
-    goal_msg = msgs.PDDLPlanOneShotActionGoal()
-    goal_msg.goal.plan_request.mode = msgs.PDDLPlanRequest.FILE
+    goal_msg = msgs.PDDLPlanOneShotGoal()
+    goal_msg.plan_request.mode = msgs.PDDLPlanRequest.FILE
 
     domain, problem = get_domain_and_problem(
         "pddl/gripper_domain.pddl", "pddl/gripper_problem_0.pddl"
     )
-    goal_msg.goal.plan_request.domain = domain
-    goal_msg.goal.plan_request.problem = problem
+    goal_msg.plan_request.domain = domain
+    goal_msg.plan_request.problem = problem
 
     # let's mock the publish_feedback method
     reader = PDDLReader()
     upf_problem = reader.parse_problem(
-        goal_msg.goal.plan_request.domain, goal_msg.goal.plan_request.problem
+        goal_msg.plan_request.domain, goal_msg.plan_request.problem
     )
 
     def feedback_mock(msg):
         pb_reader = ROSInterfaceReader()
-        upf_plan = pb_reader.convert(msg.feedback.plan_result.plan, upf_problem)
+        upf_plan = pb_reader.convert(msg.plan_result.plan, upf_problem)
         good_plans = [
             "[pick(ball1, rooma, right), move(rooma, roomb), drop(ball1, roomb, right)]",
             "[pick(ball1, rooma, left), move(rooma, roomb), drop(ball1, roomb, left)]",
@@ -57,9 +57,9 @@ def test_plan_from_file_pddl_no_tt():
     node_test._pddl_plan_one_shot_server = action_server_mock
     node_test.pddl_plan_one_shot_callback(goal_msg)
 
-    expected_result = msgs.PDDLPlanOneShotActionResult()
-    expected_result.result.success = True
-    expected_result.result.message = ""
+    expected_result = msgs.PDDLPlanOneShotResult()
+    expected_result.success = True
+    expected_result.message = ""
 
     action_server_mock.set_succeeded.assert_called_with(expected_result)
 
@@ -69,24 +69,24 @@ def test_plan_from_file_pddl_tt():
 
     # prepare the magic mock
     action_server_mock = MagicMock()
-    goal_msg = msgs.PDDLPlanOneShotActionGoal()
-    goal_msg.goal.plan_request.mode = msgs.PDDLPlanRequest.FILE
+    goal_msg = msgs.PDDLPlanOneShotGoal()
+    goal_msg.plan_request.mode = msgs.PDDLPlanRequest.FILE
 
     domain, problem = get_domain_and_problem(
         "/pddl/domain_tt.pddl", "/pddl/problem_tt_1.pddl"
     )
-    goal_msg.goal.plan_request.domain = domain
-    goal_msg.goal.plan_request.problem = problem
+    goal_msg.plan_request.domain = domain
+    goal_msg.plan_request.problem = problem
 
     # let's mock the publish_feedback method
     reader = PDDLReader()
     upf_problem = reader.parse_problem(
-        goal_msg.goal.plan_request.domain, goal_msg.goal.plan_request.problem
+        goal_msg.plan_request.domain, goal_msg.plan_request.problem
     )
 
     def feedback_mock(msg):
         pb_reader = ROSInterfaceReader()
-        upf_plan = pb_reader.convert(msg.feedback.plan_result.plan, upf_problem)
+        upf_plan = pb_reader.convert(msg.plan_result.plan, upf_problem)
         good_plan = "[(Fraction(0, 1), move(leia, kitchen, bedroom), Fraction(5, 1))]"
         assert upf_plan.__repr__() == good_plan
 
@@ -96,8 +96,8 @@ def test_plan_from_file_pddl_tt():
     node_test._pddl_plan_one_shot_server = action_server_mock
     node_test.pddl_plan_one_shot_callback(goal_msg)
 
-    expected_result = msgs.PDDLPlanOneShotActionResult()
-    expected_result.result.success = True
-    expected_result.result.message = ""
+    expected_result = msgs.PDDLPlanOneShotResult()
+    expected_result.success = True
+    expected_result.message = ""
 
     action_server_mock.set_succeeded.assert_called_with(expected_result)
