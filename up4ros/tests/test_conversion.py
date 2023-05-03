@@ -41,10 +41,6 @@ class TestROSInterfaces(unittest.TestCase):
         environment.get_environment().credits_stream = None
         pass
 
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
