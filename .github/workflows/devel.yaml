@@ -8,12 +8,6 @@ on:
     branches:
       - devel
 
-env:
-  up_commit: "master"
-  up_tamer_commit: "master"
-  up_pyperplan_commit: "master"
-  up_fast_downward_commit: "master"
-
 jobs:
   test_docker:
     runs-on: ubuntu-latest
@@ -40,35 +34,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y wget python3-vcstool python3-pytest libfl-dev pip python3-rosdep python3-catkin-tools build-essential
-
-      - name: Install unified planning from sources
-        run: |
-          mkdir src
-          cd src
-          git clone https://github.com/aiplan4eu/unified-planning.git
-          cd unified-planning
-          git checkout ${{env.up_commit}}
-          python3 -m pip install -r requirements.txt
-          python3 -m pip install -r dev-requirements.txt
-          python3 -m pip install tarski[arithmetic]
-          # sudo apt install -y gringo
-          python3 -m black --check --exclude=unified_planning/grpc/generated/ .
-          python3 -m mypy unified_planning
-          cd ..
-          git clone https://github.com/aiplan4eu/up-tamer
-          cd up-tamer
-          git checkout ${{env.up_tamer_commit}}
-          cd .. 
-          python3 -m pip install up-tamer/
-          git clone https://github.com/aiplan4eu/up-pyperplan
-          cd up-pyperplan
-          git checkout ${{env.up_pyperplan_commit}}
-          cd ..
-          python3 -m pip install up-pyperplan/
-          cd unified-planning
-          python3 setup.py install
-          python3 scripts/test_imports.py
-          cd ..
+          sudo pip install unified-planning unified-planning[engines]
 
       - name: Prepare the catkin ws
         id: prepare-catkin-ws
