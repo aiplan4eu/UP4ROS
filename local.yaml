@@ -1,0 +1,6 @@
+up4ros:
+  ubuntu:
+  - ros-noetic-up4ros
+up_msgs:
+  ubuntu:
+  - ros-noetic-up-msgs
