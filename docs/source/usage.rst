@@ -3,11 +3,24 @@ Usage
 
 .. _installation:
 
+Install through apt
+-------------------
+
+Here we assume that the unified-planning package is already installed on your machine. Else, see below.
+Installation commands:
+
+.. code-block:: console
+
+   echo "deb [trusted=yes] https://raw.githubusercontent.com/aiplan4eu/UP4ROS/focal-noetic/ ./" | sudo tee /etc/apt/sources.list.d/aiplan4eu_UP4ROS.list
+   echo "yaml https://raw.githubusercontent.com/aiplan4eu/UP4ROS/focal-noetic/local.yaml noetic" | sudo tee /etc/ros/rosdep/sources.list.d/1-aiplan4eu_UP4ROS.list
+   sudo apt update
+   sudo apt install ros-noetic-up4ros
+
 Install from source
 -------------------
 
 This package is a `ROS <https://www.ros.org/>`_ package. It has been developed and tested against `ROS Noetic <http://wiki.ros.org/noetic/Installation/Ubuntu>`_.
-To use up4ros, first install its dependencies (we suggest in a `virtual environment <https://docs.python.org/3/library/venv.html>_`):
+To use up4ros, first install its dependencies (we suggest in a `virtual environment <https://docs.python.org/3/library/venv.html>`_):
 
 .. code-block:: console
 
