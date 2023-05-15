@@ -1,0 +1,16 @@
+name: debian
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build_testing:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: jspricke/ros-deb-builder-action@main
+        with:
+          ROS_DISTRO: noetic
+          DEB_DISTRO: focal
+          GITHUB_TOKEN: ${{ secrets.DEBIAN_TOKEN }}
