@@ -1,3 +1,4 @@
+# Copyright 2023 Magazino GmbH
 # Copyright 2022 Intelligent Robotics Lab
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
