@@ -1,32 +1,32 @@
 Package: ros-noetic-up-msgs
 Architecture: amd64
-Version: 0-2023.05.15.11.06
+Version: 0-2023.05.24.14.42
 Priority: optional
 Section: misc
 Maintainer: gemignani <gemignani@magazino.eu>
 Installed-Size: 10408
 Depends: ros-noetic-actionlib, ros-noetic-actionlib-msgs, ros-noetic-message-runtime, ros-noetic-std-msgs
-Filename: ./ros-noetic-up-msgs_0-2023.05.15.11.06_amd64.deb
-Size: 275624
-MD5sum: 24059576e67ac93aa51955ede4232f54
-SHA1: 34880ca733c585b2186a3aa5ee3831b50857927a
-SHA256: e091503a8f05554b91014f2ca9ce7430b504915eccf8ed7d8a444206125abb20
-SHA512: 9b98e74436e75b8cf96d34c8749714c6f59db032e0cdac9b89fddbb5f4ab8370f8dc92c1f82526706f4f10785f33987be0a95b91f44e22c149caaa65ed1667ff
+Filename: ./ros-noetic-up-msgs_0-2023.05.24.14.42_amd64.deb
+Size: 275524
+MD5sum: f34cf4064701ac2c500f351020b7fca8
+SHA1: 628414c602658175db2fc24cd372f3b4adceed26
+SHA256: 5b108bc40182b5e297ca4bc4c8666751b355608c42aae8a33bb52ce3022315b2
+SHA512: 0316baf28e45c66585be03eda8ea4f295efb9929557a642d9b68b6ef4f02abf8763be1267c589a3d8fc6e19692c327f4bd71b4647ecfe1062a10b6c72cd1db97
 Description: Messages to interact with the AIPlan4EU Unified Planning library
 
 Package: ros-noetic-up4ros
 Architecture: amd64
-Version: 0-2023.05.15.11.05
+Version: 0-2023.05.24.14.40
 Priority: optional
 Section: misc
 Maintainer: gemignani <gemignani@magazino.eu>
-Installed-Size: 197
+Installed-Size: 198
 Depends: ros-noetic-message-runtime, ros-noetic-rospy, ros-noetic-rosservice, ros-noetic-up-msgs
-Filename: ./ros-noetic-up4ros_0-2023.05.15.11.05_amd64.deb
-Size: 38000
-MD5sum: 89be5bd367e176326430c295f986a6eb
-SHA1: c1f38eb4c979829cbc05f09a9e312767ac215d1b
-SHA256: f8d7708530e900610b2b5caad4db91cc9b468116623fbd2a8a49ca3dd7bed390
-SHA512: e47fe2dbf147e32425738a350e9e473e05209154e3f122a5757a2b6248fc496e83d72a4242b3ddf3183243d298ce2142ffe2eaa61d0cafb96dd9e278c898825b
+Filename: ./ros-noetic-up4ros_0-2023.05.24.14.40_amd64.deb
+Size: 38004
+MD5sum: e3a055fba35094166a9aee9a57f521b0
+SHA1: 2bd371f9e66a1d630d66eb8ffab965cbe07a8243
+SHA256: bc22b57fdf0faa698f0db5df35218ccb1f5d4afc0641ca4fb86a6458cb885640
+SHA512: 0009e22d92d7a418dee4b6e55e4e0addf0d4ccaade11fedd83ee2aac7a8fe6142e7cb646a7f7056cbfdf26ffe421009cd8fe6958c22f85dbbf44aab4b02b7836
 Description: Ros wrapper of the AIPlan4EU Unified Planning library
 
